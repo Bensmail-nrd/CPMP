@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace CPMP.Models;
 
 public partial class Project
 {
+    [Required]
     public int ProjectId { get; set; }
 
     public string Name { get; set; } = null!;
