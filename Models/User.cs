@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace CPMP.Models;
 
 public partial class User
 {
     public int UserId { get; set; }
-
+    [Display(Name ="User name")]
+    [Required(ErrorMessage = "User name is required")]
+    [StringLength(50, ErrorMessage = "User name cannot be longer than 50 characters")]
     public string Username { get; set; } = null!;
-
     public string PasswordHash { get; set; } = null!;
-
+    [Required(ErrorMessage = "Email is required")]
+    [EmailAddress(ErrorMessage = "Invalid email address")]
     public string Email { get; set; } = null!;
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; } = DateTime.Now;
 
     public virtual ICollection<File> Files { get; set; } = new List<File>();
 
