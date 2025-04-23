@@ -1531,7 +1531,7 @@
   };
 
   /**!
-   * @fileOverview Kickass library to create and place poppers near their reference elements.
+   * fileOverview Kickass library to create and place poppers near their reference elements.
    * @version 1.16.1
    * @license
    * Copyright (c) 2016 Federico Zivolo and contributors

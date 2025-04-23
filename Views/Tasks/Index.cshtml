@@ -1,0 +1,92 @@
+﻿@model IEnumerable<CPMP.Models.Task>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<p>
+    <a class="btn btn-outline-primary" asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DueDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedAt)
+            </th>
+@*             <th>
+                @Html.DisplayNameFor(model => model.CreatedByNavigation)
+            </th> *@
+            <th>
+                @Html.DisplayNameFor(model => model.Project)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DueDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedAt)
+            </td>
+@*             <td>
+                @Html.DisplayFor(modelItem => item.CreatedByNavigation.Email)
+            </td> *@
+            <td>
+                @Html.DisplayFor(modelItem => item.Project.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status.Name)
+            </td>
+            <td>
+                    <button class="btn btn-link nav-link p-0" type="button"
+                            id="actionDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                        <!-- Dropdown - User Information -->
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                         aria-labelledby="actionDropdown">
+                            <a class="dropdown-item" asp-action="Create" asp-controller="TaskAssignments" asp-route-id="@item.TaskId">
+                                <i class="fas fa-user-plus mr-2 text-gray-400"></i>
+                                Assign
+                            </a>
+                            <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.TaskId">
+                                <i class="fas fa-edit mr-2 fa-sm fa-fw text-gray-400"></i>
+                                Edit
+                            </a>
+                            <a class="dropdown-item" asp-action="Details" asp-route-id="@item.TaskId">
+                                <i class="fas fa-info-circle fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Details
+                            </a>
+                            <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.TaskId">
+                                <i class="fas fa-trash-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Delete
+                            </a>
+                        </div>
+                    
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

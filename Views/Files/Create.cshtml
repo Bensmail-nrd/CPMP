@@ -1,0 +1,27 @@
+﻿@model CPMP.Models.File
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>File</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" required />
+            <br /><br />
+            <input value="@Model.TaskId" hidden name="taskId" />
+            <button type="submit">Upload</button>
+        </form>
+
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

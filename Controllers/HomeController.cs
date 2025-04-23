@@ -1,32 +1,26 @@
+﻿using CPMP.Models;
 using Microsoft.AspNetCore.Mvc;
-using PCMP.Models;
-using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
-namespace PCMP.Controllers
+namespace CPMP.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly ApplicationDbContext _context;
+        public HomeController(ApplicationDbContext context)
         {
-            _logger = logger;
+            _context = context;
         }
-
         public IActionResult Index()
         {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            int userId = int.Parse(HttpContext.Session.GetString("UserId")!);
+            var user = _context.Users.Include(u => u.Roles)
+                .Include(u => u.Files)
+                .Include(u => u.Tasks)
+                .Include(u => u.Notifications.Where(n => n.IsRead==false))
+                .AsNoTracking()
+                .FirstOrDefault(_ => _.UserId.Equals(userId));
+            return View(user);
         }
     }
 }
