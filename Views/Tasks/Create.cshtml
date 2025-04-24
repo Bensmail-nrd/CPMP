@@ -1,4 +1,4 @@
-﻿@model CPMP.Models.Task
+﻿@model CPMP.Models.Task ;
 
 @{
     ViewData["Title"] = "Create";
@@ -13,7 +13,7 @@
                 <!-- First Column -->
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="ProjectId" class="control-label"></label>
+                    <label asp-for="ProjectId" class="control-label"></label>
                         <select asp-for="ProjectId" class="form-control" asp-items="ViewBag.ProjectId"></select>
                     </div>
 

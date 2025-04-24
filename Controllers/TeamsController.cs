@@ -2,29 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CPMP.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using CPMP.Models;
 
 namespace CPMP.Controllers
 {
-    public class ProjectsController : Controller
+    public class TeamsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public ProjectsController(ApplicationDbContext context)
+        public TeamsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Projects
+        // GET: Teams
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Projects.ToListAsync());
+            var applicationDbContext = _context.Teams.Include(t => t.Project);
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Projects/Details/5
+        // GET: Teams/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -32,39 +33,42 @@ namespace CPMP.Controllers
                 return NotFound();
             }
 
-            var project = await _context.Projects
-                .FirstOrDefaultAsync(m => m.ProjectId == id);
-            if (project == null)
+            var team = await _context.Teams
+                .Include(t => t.Project)
+                .FirstOrDefaultAsync(m => m.TeamId == id);
+            if (team == null)
             {
                 return NotFound();
             }
 
-            return View(project);
+            return View(team);
         }
 
-        // GET: Projects/Create
+        // GET: Teams/Create
         public IActionResult Create()
         {
+            ViewData["ProjectId"] = new SelectList(_context.Projects, "ProjectId", "Name");
             return View();
         }
 
-        // POST: Projects/Create
+        // POST: Teams/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProjectId,Name,Description,StartDate,EndDate,Status,CreatedAt")] Project project)
+        public async Task<IActionResult> Create([Bind("TeamId,ProjectId,Name,CreatedAt")] Team team)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(project);
+                _context.Add(team);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(project);
+            ViewData["ProjectId"] = new SelectList(_context.Projects, "ProjectId", "Name", team.ProjectId);
+            return View(team);
         }
 
-        // GET: Projects/Edit/5
+        // GET: Teams/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -72,26 +76,23 @@ namespace CPMP.Controllers
                 return NotFound();
             }
 
-            var project = await _context.Projects
-                .Include(_=>_.Tasks)
-                .ThenInclude(_=>_.Status)
-                .Include(_ => _.Teams)
-                .FirstOrDefaultAsync(_=>_.ProjectId==id);
-            if (project == null)
+            var team = await _context.Teams.FindAsync(id);
+            if (team == null)
             {
                 return NotFound();
             }
-            return View(project);
+            ViewData["ProjectId"] = new SelectList(_context.Projects, "ProjectId", "Name", team.ProjectId);
+            return View(team);
         }
 
-        // POST: Projects/Edit/5
+        // POST: Teams/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProjectId,Name,Description,StartDate,EndDate,Status,CreatedAt")] Project project)
+        public async Task<IActionResult> Edit(int id, [Bind("TeamId,ProjectId,Name,CreatedAt")] Team team)
         {
-            if (id != project.ProjectId)
+            if (id != team.TeamId)
             {
                 return NotFound();
             }
@@ -100,12 +101,12 @@ namespace CPMP.Controllers
             {
                 try
                 {
-                    _context.Update(project);
+                    _context.Update(team);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProjectExists(project.ProjectId))
+                    if (!TeamExists(team.TeamId))
                     {
                         return NotFound();
                     }
@@ -116,10 +117,11 @@ namespace CPMP.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(project);
+            ViewData["ProjectId"] = new SelectList(_context.Projects, "ProjectId", "Name", team.ProjectId);
+            return View(team);
         }
 
-        // GET: Projects/Delete/5
+        // GET: Teams/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -127,34 +129,35 @@ namespace CPMP.Controllers
                 return NotFound();
             }
 
-            var project = await _context.Projects
-                .FirstOrDefaultAsync(m => m.ProjectId == id);
-            if (project == null)
+            var team = await _context.Teams
+                .Include(t => t.Project)
+                .FirstOrDefaultAsync(m => m.TeamId == id);
+            if (team == null)
             {
                 return NotFound();
             }
 
-            return View(project);
+            return View(team);
         }
 
-        // POST: Projects/Delete/5
+        // POST: Teams/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var project = await _context.Projects.FindAsync(id);
-            if (project != null)
+            var team = await _context.Teams.FindAsync(id);
+            if (team != null)
             {
-                _context.Projects.Remove(project);
+                _context.Teams.Remove(team);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ProjectExists(int id)
+        private bool TeamExists(int id)
         {
-            return _context.Projects.Any(e => e.ProjectId == id);
+            return _context.Teams.Any(e => e.TeamId == id);
         }
     }
 }

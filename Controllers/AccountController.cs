@@ -29,7 +29,7 @@ namespace CPMP.Controllers
 					HttpContext.Session.SetString("UserId", user.UserId.ToString());
 					HttpContext.Session.SetString("Username", user.Username);
 					HttpContext.Session.SetString("Email", user.Email);
-                    foreach (var item in user.Roles)
+					foreach (var item in user.Roles)
                     {
                         HttpContext.Session.SetString(item.Name, "1");
                     }

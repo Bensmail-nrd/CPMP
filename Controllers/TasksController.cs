@@ -24,6 +24,7 @@ namespace CPMP.Controllers
                 Include(t => t.CreatedByNavigation).
                 Include(t => t.Project).
                 Include(t => t.Status).
+                Include(t=>t.TaskAssignments).
                 Where(_=>_.CreatedBy==int.Parse(HttpContext.Session.GetString("UserId")!));
             return View(await applicationDbContext.ToListAsync());
         }
@@ -86,9 +87,11 @@ namespace CPMP.Controllers
             }
 
             var task = await _context.Tasks
-                .Include(_=>_.Files).ThenInclude(_=>_.UploadedByNavigation)
+                .Include(_ => _.Files).ThenInclude(_ => _.UploadedByNavigation)
                 .Include(_ => _.TimeLogs)
                 .Include(_ => _.TaskComments)
+                .Include(_ => _.TaskAssignments)
+                .ThenInclude(_=>_.User)
                 .FirstOrDefaultAsync(_=>_.TaskId==id);
             if (task == null)
             {

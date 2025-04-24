@@ -1,9 +1,8 @@
-﻿@model IEnumerable<CPMP.Models.TaskAssignment>
+﻿@model IEnumerable<CPMP.Models.TeamMember>
 
 @{
     ViewData["Title"] = "Index";
 }
-
 <p>
     <a class="btn btn-outline-primary" asp-action="Create">Create New</a>
 </p>
@@ -11,10 +10,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.AssignedAt)
+                @Html.DisplayNameFor(model => model.RoleInTeam)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Task)
+                @Html.DisplayNameFor(model => model.Team)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.User)
@@ -26,18 +25,18 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.AssignedAt)
+                @Html.DisplayFor(modelItem => item.RoleInTeam)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Task.Title)
+                @Html.DisplayFor(modelItem => item.Team.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.User.Email)
             </td>
             <td>
-                    @Html.ActionLink(linkText: "Edit", actionName: "Edit", controllerName: "Tasks", new { id = item.TaskId }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @Html.ActionLink("Edit", "Edit", new {id=item.TeamId}) |
+                    @Html.ActionLink("Details", "Details", new { id = item.TeamId }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.TeamId })
             </td>
         </tr>
 }

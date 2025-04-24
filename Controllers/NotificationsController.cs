@@ -2,29 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CPMP.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using CPMP.Models;
 
 namespace CPMP.Controllers
 {
-    public class ProjectsController : Controller
+    public class NotificationsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public ProjectsController(ApplicationDbContext context)
+        public NotificationsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Projects
+        // GET: Notifications
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Projects.ToListAsync());
+            var applicationDbContext = _context.Notifications.AsNoTracking().Include(n => n.User).Where(_=>_.UserId==int.Parse(HttpContext.Session.GetString("UserId")!));
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Projects/Details/5
+        // GET: Notifications/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -32,39 +33,42 @@ namespace CPMP.Controllers
                 return NotFound();
             }
 
-            var project = await _context.Projects
-                .FirstOrDefaultAsync(m => m.ProjectId == id);
-            if (project == null)
+            var notification = await _context.Notifications
+                .Include(n => n.User)
+                .FirstOrDefaultAsync(m => m.NotificationId == id);
+            if (notification == null)
             {
                 return NotFound();
             }
 
-            return View(project);
+            return View(notification);
         }
 
-        // GET: Projects/Create
+        // GET: Notifications/Create
         public IActionResult Create()
         {
+            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "Email");
             return View();
         }
 
-        // POST: Projects/Create
+        // POST: Notifications/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProjectId,Name,Description,StartDate,EndDate,Status,CreatedAt")] Project project)
+        public async Task<IActionResult> Create([Bind("NotificationId,UserId,Message,IsRead,CreatedAt")] Notification notification)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(project);
+                _context.Add(notification);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(project);
+            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "Email", notification.UserId);
+            return View(notification);
         }
 
-        // GET: Projects/Edit/5
+        // GET: Notifications/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -72,26 +76,23 @@ namespace CPMP.Controllers
                 return NotFound();
             }
 
-            var project = await _context.Projects
-                .Include(_=>_.Tasks)
-                .ThenInclude(_=>_.Status)
-                .Include(_ => _.Teams)
-                .FirstOrDefaultAsync(_=>_.ProjectId==id);
-            if (project == null)
+            var notification = await _context.Notifications.FindAsync(id);
+            if (notification == null)
             {
                 return NotFound();
             }
-            return View(project);
+            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "Email", notification.UserId);
+            return View(notification);
         }
 
-        // POST: Projects/Edit/5
+        // POST: Notifications/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProjectId,Name,Description,StartDate,EndDate,Status,CreatedAt")] Project project)
+        public async Task<IActionResult> Edit(int id, [Bind("NotificationId,UserId,Message,IsRead,CreatedAt")] Notification notification)
         {
-            if (id != project.ProjectId)
+            if (id != notification.NotificationId)
             {
                 return NotFound();
             }
@@ -100,12 +101,12 @@ namespace CPMP.Controllers
             {
                 try
                 {
-                    _context.Update(project);
+                    _context.Update(notification);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProjectExists(project.ProjectId))
+                    if (!NotificationExists(notification.NotificationId))
                     {
                         return NotFound();
                     }
@@ -116,10 +117,11 @@ namespace CPMP.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(project);
+            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "Email", notification.UserId);
+            return View(notification);
         }
 
-        // GET: Projects/Delete/5
+        // GET: Notifications/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -127,34 +129,35 @@ namespace CPMP.Controllers
                 return NotFound();
             }
 
-            var project = await _context.Projects
-                .FirstOrDefaultAsync(m => m.ProjectId == id);
-            if (project == null)
+            var notification = await _context.Notifications
+                .Include(n => n.User)
+                .FirstOrDefaultAsync(m => m.NotificationId == id);
+            if (notification == null)
             {
                 return NotFound();
             }
 
-            return View(project);
+            return View(notification);
         }
 
-        // POST: Projects/Delete/5
+        // POST: Notifications/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var project = await _context.Projects.FindAsync(id);
-            if (project != null)
+            var notification = await _context.Notifications.FindAsync(id);
+            if (notification != null)
             {
-                _context.Projects.Remove(project);
+                _context.Notifications.Remove(notification);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ProjectExists(int id)
+        private bool NotificationExists(int id)
         {
-            return _context.Projects.Any(e => e.ProjectId == id);
+            return _context.Notifications.Any(e => e.NotificationId == id);
         }
     }
 }

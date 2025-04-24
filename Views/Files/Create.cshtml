@@ -10,18 +10,26 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
+        <form action="/upload" method="post" enctype="multipart/form-data" class="border p-4 rounded-3 bg-light" style="max-width: 500px; margin: 0 auto;">
+            <div class="mb-4">
+                <label for="formFile" class="form-label fw-bold mb-3">Select file to upload</label>
+                <input class="form-control" type="file" id="formFile" name="file" required>
+            </div>
 
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" required />
-            <br /><br />
-            <input value="@Model.TaskId" hidden name="taskId" />
-            <button type="submit">Upload</button>
+            <input type="hidden" value="@Model.TaskId" name="taskId">
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-upload me-2"></i> Upload
+                </button>
+            </div>
         </form>
 
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-controller="Tasks" asp-route-id="@Model.TaskId">Back to task</a>
+
 </div>
 

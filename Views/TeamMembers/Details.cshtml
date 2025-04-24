@@ -1,4 +1,4 @@
-﻿@model CPMP.Models.TaskAssignment
+﻿@model CPMP.Models.TeamMember
 
 @{
     ViewData["Title"] = "Details";
@@ -7,20 +7,20 @@
 <h1>Details</h1>
 
 <div>
-    <h4>TaskAssignment</h4>
+    <h4>TeamMember</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AssignedAt)
+            @Html.DisplayNameFor(model => model.RoleInTeam)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AssignedAt)
+            @Html.DisplayFor(model => model.RoleInTeam)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Task)
+            @Html.DisplayNameFor(model => model.Team)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Task.Title)
+            @Html.DisplayFor(model => model.Team.Name)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.User)
@@ -31,6 +31,6 @@
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Edit", "Edit", new { id=Model.TeamId }) |
     <a asp-action="Index">Back to List</a>
 </div>

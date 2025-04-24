@@ -130,9 +130,9 @@ namespace CPMP.Controllers
         }
 
         // GET: TaskAssignments/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? taskId, int? userId)
         {
-            if (id == null)
+            if (taskId == null || userId ==null)
             {
                 return NotFound();
             }
@@ -140,7 +140,7 @@ namespace CPMP.Controllers
             var taskAssignment = await _context.TaskAssignments
                 .Include(t => t.Task)
                 .Include(t => t.User)
-                .FirstOrDefaultAsync(m => m.TaskId == id);
+                .FirstOrDefaultAsync(m => m.TaskId == taskId && m.UserId ==userId);
             if (taskAssignment == null)
             {
                 return NotFound();
@@ -152,16 +152,16 @@ namespace CPMP.Controllers
         // POST: TaskAssignments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int? taskId, int? userId)
         {
-            var taskAssignment = await _context.TaskAssignments.FindAsync(id);
+            var taskAssignment = await _context.TaskAssignments.FirstOrDefaultAsync(m => m.TaskId == taskId && m.UserId == userId);
             if (taskAssignment != null)
             {
                 _context.TaskAssignments.Remove(taskAssignment);
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Edit", "Tasks", new { id = taskId});
         }
 
         private bool TaskAssignmentExists(int id)

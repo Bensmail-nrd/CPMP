@@ -1,8 +1,10 @@
-﻿@model IEnumerable<CPMP.Models.File>
+﻿@model IEnumerable<CPMP.Models.TimeLog>
 
 @{
     ViewData["Title"] = "Index";
 }
+
+
 <p>
     <a class="btn btn-outline-primary" asp-action="Create">Create New</a>
 </p>
@@ -10,19 +12,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.FileName)
+                @Html.DisplayNameFor(model => model.HoursWorked)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FilePath)
+                @Html.DisplayNameFor(model => model.LogDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.UploadedAt)
+                @Html.DisplayNameFor(model => model.Notes)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Task)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.UploadedByNavigation)
+                @Html.DisplayNameFor(model => model.User)
             </th>
             <th></th>
         </tr>
@@ -31,24 +33,24 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.FileName)
+                @Html.DisplayFor(modelItem => item.HoursWorked)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.FilePath)
+                @Html.DisplayFor(modelItem => item.LogDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.UploadedAt)
+                @Html.DisplayFor(modelItem => item.Notes)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Task.TaskId)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.UploadedByNavigation.Email)
+                @Html.DisplayFor(modelItem => item.User.Email)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.FileId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.FileId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.FileId">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.TimeLogId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.TimeLogId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.TimeLogId">Delete</a>
             </td>
         </tr>
 }

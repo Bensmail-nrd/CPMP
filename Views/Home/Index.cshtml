@@ -2,6 +2,8 @@
 @model CPMP.Models.User
 @{
     ViewData["Title"] = "Index";
+    ViewData["Page"] = "Home";
+
     Context.Session.SetInt32(Constants.NOTIFICATION_NUMBER,Model.Notifications.Count);
 }
 

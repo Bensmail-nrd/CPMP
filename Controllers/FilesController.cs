@@ -73,6 +73,24 @@ namespace CPMP.Controllers
             ViewData["UploadedBy"] = new SelectList(_context.Users, "UserId", "Email", file.UploadedBy);
             return View(file);
         }
+
+        [HttpGet("download/{fileId:int}")]
+        public IActionResult DownloadFile(int fileId)
+        {
+            var file = _context.Files.AsNoTracking().FirstOrDefault(f => f.FileId == fileId);
+            if (file == null)
+            {
+                return NotFound("File not found.");
+            }
+            string filePath = Path.Combine("d:/uploads/", file!.FileName!);
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("File not found.");
+            }
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            return File(fileBytes, "application/octet-stream", file!.FileName!);
+        }
+
         [HttpPost("Upload")]
         public async Task<IActionResult> UploadFile(IFormFile file,int taskId)
         {
@@ -178,17 +196,18 @@ namespace CPMP.Controllers
 
         // POST: Files/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        /*[ValidateAntiForgeryToken]*/
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var file = await _context.Files.FindAsync(id);
+            var taskId = file.TaskId;
             if (file != null)
             {
                 _context.Files.Remove(file);
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Edit","Tasks", new {Id=taskId});
         }
 
         private bool FileExists(int id)
