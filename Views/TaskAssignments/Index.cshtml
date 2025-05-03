@@ -4,9 +4,6 @@
     ViewData["Title"] = "Index";
 }
 
-<p>
-    <a class="btn btn-outline-primary" asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -17,7 +14,7 @@
                 @Html.DisplayNameFor(model => model.Task)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.User)
+                @Html.DisplayNameFor(model => model.Task.CreatedByNavigation)
             </th>
             <th></th>
         </tr>
@@ -32,12 +29,15 @@
                 @Html.DisplayFor(modelItem => item.Task.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.User.Email)
+                @Html.DisplayFor(modelItem => item.Task!.CreatedByNavigation!.Username)
             </td>
             <td>
-                    @Html.ActionLink(linkText: "Edit", actionName: "Edit", controllerName: "Tasks", new { id = item.TaskId }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                    @Html.ActionLink(linkText: "Edit", actionName: "Edit", controllerName: "Tasks", new { id = item.TaskId}) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) 
+                @if(item.Task.CreatedBy==int.Parse(Context.Session.GetString("UserId")))
+                {
+                        @Html.ActionLink("| Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                }
             </td>
         </tr>
 }

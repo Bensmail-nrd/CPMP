@@ -52,7 +52,31 @@ async function fetchAlerts() {
                     <div class="dropdown-item text-danger">Failed to load notifications</div>
                 `;
     }
+document.getElementById('alertsDropdown').addEventListener('show.bs.dropdown', fetchAlerts);
 }
 
-// Optional: Pre-fetch when dropdown is about to open
-document.getElementById('alertsDropdown').addEventListener('show.bs.dropdown', fetchAlerts);
+function showToastr(message) {
+    toastr.success(message);
+}
+
+function hundleAddMemberToTeam(hasUsers) {
+    console.log(hasUsers);
+    if (hasUsers=='True') {
+        $('#addMemberModal').modal('show');
+    } else {
+        toastr.info('There is user left to be added to this team');
+    }
+}
+function GetStatusBadgeClass(status)
+{
+    switch (status) {
+        case "1":
+            return "badge-secondary";
+        case "2":
+            return "badge-primary";
+        case "3":
+            return "badge-success";
+        default:
+            return "badge-light";
+    }
+    }

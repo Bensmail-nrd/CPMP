@@ -21,10 +21,9 @@ namespace CPMP.Controllers
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Tasks.
-                Include(t => t.CreatedByNavigation).
                 Include(t => t.Project).
                 Include(t => t.Status).
-                Include(t=>t.TaskAssignments).
+                AsNoTracking().
                 Where(_=>_.CreatedBy==int.Parse(HttpContext.Session.GetString("UserId")!));
             return View(await applicationDbContext.ToListAsync());
         }
@@ -53,10 +52,14 @@ namespace CPMP.Controllers
         // GET: Tasks/Create
         public IActionResult Create()
         {
-            ViewData["CreatedBy"] = new SelectList(_context.Users, "UserId", "Email");
             ViewData["ProjectId"] = new SelectList(_context.Projects, "ProjectId", "Name");
             ViewData["StatusId"] = new SelectList(_context.TaskStatuses, "TaskStatusId", "Name");
-            return View();
+            CPMP.Models.Task task = new CPMP.Models.Task
+            {
+                DueDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
+                StatusId = _context.TaskStatuses.Find(2)!.TaskStatusId,
+            };
+            return View(task);
         }
 
         // POST: Tasks/Create
@@ -70,9 +73,10 @@ namespace CPMP.Controllers
             {
                 _context.Add(task);
                 await _context.SaveChangesAsync();
+                TempData["ToastrType"] = "success";
+                TempData["ToastrMessage"] = "The Task has been created";
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreatedBy"] = new SelectList(_context.Users, "UserId", "Email", task.CreatedBy);
             ViewData["ProjectId"] = new SelectList(_context.Projects, "ProjectId", "Name", task.ProjectId);
             ViewData["StatusId"] = new SelectList(_context.TaskStatuses, "TaskStatusId", "Name", task.StatusId);
             return View(task);
@@ -97,9 +101,16 @@ namespace CPMP.Controllers
             {
                 return NotFound();
             }
+            ViewData["Users"] = new SelectList(_context.Users.Where(_=>!_.TaskAssignments.Any(_=>_.TaskId==id)), "UserId", "Email", task.CreatedBy);
+
             ViewData["CreatedBy"] = new SelectList(_context.Users, "UserId", "Email", task.CreatedBy);
             ViewData["ProjectId"] = new SelectList(_context.Projects, "ProjectId", "Name", task.ProjectId);
             ViewData["StatusId"] = new SelectList(_context.TaskStatuses, "TaskStatusId", "Name", task.StatusId);
+            if (Request.Headers.Referer.Last().Contains("TaskAssignment"))
+            {
+                TempData["From"] = "TaskAssignment";
+                TempData.Keep();
+            }
             return View(task);
         }
 
@@ -115,7 +126,9 @@ namespace CPMP.Controllers
             {
                 return NotFound();
             }
-
+            var a = TempData["From"];
+            ModelState.Remove("ProjectId"); 
+            ModelState.Remove("DueDate"); 
             if (ModelState.IsValid)
             {
                 try
@@ -134,11 +147,16 @@ namespace CPMP.Controllers
                         throw;
                     }
                 }
+                if (TempData["From"]!=null && TempData["From"]!.ToString()== "TaskAssignment")
+                {
+                    return RedirectToAction("Index", "TaskAssignments");
+                }
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CreatedBy"] = new SelectList(_context.Users, "UserId", "Email", task.CreatedBy);
             ViewData["ProjectId"] = new SelectList(_context.Projects, "ProjectId", "Name", task.ProjectId);
             ViewData["StatusId"] = new SelectList(_context.TaskStatuses, "TaskStatusId", "Name", task.StatusId);
+            TempData.Keep();
             return View(task);
         }
 

@@ -17,7 +17,7 @@ namespace CPMP.Controllers
             var user = _context.Users.Include(u => u.Roles)
                 .Include(u => u.Files)
                 .Include(u => u.Tasks)
-                .Include(u=>u.TaskAssignments)
+                .Include(u=>u.TaskAssignments).ThenInclude(_=>_.Task).ThenInclude(_=>_.Status) 
                 .Include(u=>u.TeamMembers)
                 .Include(u => u.Notifications.Where(n => n.IsRead==false))
                 .AsNoTracking()

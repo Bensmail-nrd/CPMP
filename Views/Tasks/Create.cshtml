@@ -7,8 +7,8 @@
 
     <div class="">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
+            @* <div asp-validation-summary="All" class="text-danger"></div> *@
+        @* @Html.ValidationSummary(true, "here is an error", new { @class = "alert alert-danger" }) *@
             <div class="row">
                 <!-- First Column -->
                 <div class="col-md-6">
@@ -19,14 +19,14 @@
 
                     <div class="form-group">
                         <label asp-for="Title" class="control-label"></label>
-                        <input asp-for="Title" class="form-control" />
+                        <input asp-for="Title" class="form-control" placeholder="Title" />
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
                         <label asp-for="CreatedBy" class="control-label"></label>
-                        <input asp-for="Title" class="form-control" value="@Context.Session.GetString("Email")" readonly/>
-                        @* <select asp-for="CreatedBy" class="form-control" asp-items="ViewBag.CreatedBy"></select> *@
+                        <input class="form-control" value="@Context.Session.GetString("Email")" readonly/>
+                        <input hidden asp-for="CreatedBy" value="@Context.Session.GetString("UserId")" />
                     </div>
                 </div>
 
@@ -62,9 +62,3 @@
             </div>
         </form>
     </div>
-
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-

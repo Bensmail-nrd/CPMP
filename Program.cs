@@ -11,7 +11,6 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
           options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 var app = builder.Build();
@@ -30,11 +29,6 @@ app.UseSession();
 
 app.Use(async (context, next) =>
 {
-    if (context.Session==null)
-    {
-        context.Response.Redirect("/Account/Login");
-        return;
-    }
     var isAuthenticated = context.Session.GetString("UserId")!=null;
     var isLoginPage = context.Request.Path.StartsWithSegments("/Account/Login");
     var isRegisterPage = context.Request.Path.StartsWithSegments("/Account/Register");

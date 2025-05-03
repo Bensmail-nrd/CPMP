@@ -68,6 +68,18 @@ namespace CPMP.Controllers
             return View(team);
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddTeamMember(int teamId, int userId, string roleInTeam)
+        {
+            var teamMember = new TeamMember { UserId = userId ,TeamId = teamId,RoleInTeam= roleInTeam};
+                _context.Add(teamMember);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Edit), new {id=teamId});
+
+        }
+
         // GET: Teams/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -76,12 +88,19 @@ namespace CPMP.Controllers
                 return NotFound();
             }
 
-            var team = await _context.Teams.FindAsync(id);
+            var team = await _context.Teams
+                .Include(_ => _.TeamMembers)
+                .ThenInclude(_ => _.User)
+                .FirstOrDefaultAsync(_ => _.TeamId == id);
+                
             if (team == null)
             {
                 return NotFound();
             }
             ViewData["ProjectId"] = new SelectList(_context.Projects, "ProjectId", "Name", team.ProjectId);
+            ViewBag.Users = new SelectList(_context.Users
+        .Where(u => !u.TeamMembers.Any(tm => tm.TeamId == id)), "UserId", "Username");
+            ViewBag.roles = new SelectList(_context.RolesInTeams, "Name", "Name", "Select a role");
             return View(team);
         }
 

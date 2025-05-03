@@ -26,17 +26,13 @@ namespace CPMP.Controllers
         }
 
         // GET: TeamMembers/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int teamId, int userId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
             var teamMember = await _context.TeamMembers
                 .Include(t => t.Team)
                 .Include(t => t.User)
-                .FirstOrDefaultAsync(m => m.TeamId == id);
+                .FirstOrDefaultAsync(m => m.TeamId == teamId && m.UserId==userId);
             if (teamMember == null)
             {
                 return NotFound();
@@ -93,20 +89,14 @@ namespace CPMP.Controllers
         }
 
         // GET: TeamMembers/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int teamId, int userId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var teamMember = await _context.TeamMembers.FirstOrDefaultAsync(_=>_.TeamId==id);
+            var teamMember = await _context.TeamMembers.Include(_=>_.User).Include(_=>_.Team).FirstOrDefaultAsync(_=>_.TeamId==teamId && _.UserId==userId);
             if (teamMember == null)
             {
                 return NotFound();
             }
-            ViewData["TeamId"] = new SelectList(_context.Teams, "TeamId", "Name", teamMember.TeamId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "Email", teamMember.UserId);
+			ViewBag.roles = new SelectList(_context.RolesInTeams, "Name", "Name", teamMember.RoleInTeam);
             return View(teamMember);
         }
 
@@ -115,13 +105,8 @@ namespace CPMP.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TeamId,UserId,RoleInTeam")] TeamMember teamMember)
+        public async Task<IActionResult> Edit([Bind("TeamId,UserId,RoleInTeam")] TeamMember teamMember)
         {
-            if (id != teamMember.TeamId)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
@@ -142,23 +127,18 @@ namespace CPMP.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TeamId"] = new SelectList(_context.Teams, "TeamId", "Name", teamMember.TeamId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "Email", teamMember.UserId);
+            ViewBag.roles = new SelectList(_context.RolesInTeams, "Name", "Name", teamMember.RoleInTeam);
             return View(teamMember);
         }
 
         // GET: TeamMembers/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int teamId, int userId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
             var teamMember = await _context.TeamMembers
                 .Include(t => t.Team)
                 .Include(t => t.User)
-                .FirstOrDefaultAsync(m => m.TeamId == id);
+                .FirstOrDefaultAsync(m => m.TeamId == teamId && m.UserId==userId);
             if (teamMember == null)
             {
                 return NotFound();
@@ -170,16 +150,16 @@ namespace CPMP.Controllers
         // POST: TeamMembers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int teamId, int userId)
         {
-            var teamMember = await _context.TeamMembers.FindAsync(id);
+            var teamMember = await _context.TeamMembers.FirstOrDefaultAsync(m => m.TeamId == teamId && m.UserId == userId);
             if (teamMember != null)
             {
                 _context.TeamMembers.Remove(teamMember);
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Edit","Teams", new { id = teamId});
         }
 
         private bool TeamMemberExists(int id)

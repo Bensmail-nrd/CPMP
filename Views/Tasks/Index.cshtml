@@ -60,31 +60,31 @@
                 @Html.DisplayFor(modelItem => item.Status.Name)
             </td>
             <td>
-                    <button class="btn btn-link nav-link p-0" type="button"
-                            id="actionDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-cog"></i>
-                    </button>
-                        <!-- Dropdown - User Information -->
-                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                         aria-labelledby="actionDropdown">
-                            <a class="dropdown-item" asp-action="Create" asp-controller="TaskAssignments" asp-route-id="@item.TaskId">
-                                <i class="fas fa-user-plus mr-2 text-gray-400"></i>
-                                Assign
-                            </a>
-                            <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.TaskId">
-                                <i class="fas fa-edit mr-2 fa-sm fa-fw text-gray-400"></i>
-                                Edit
-                            </a>
-                            <a class="dropdown-item" asp-action="Details" asp-route-id="@item.TaskId">
-                                <i class="fas fa-info-circle fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Details
-                            </a>
-                            <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.TaskId">
-                                <i class="fas fa-trash-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Delete
-                            </a>
-                        </div>
-                    
+                    <bytton class="nav-link no-arrow"  id="actionDropdown@(item.TaskId)" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-cog" style="color:cornflowerblue"></i>
+                    </bytton>
+                    <!-- Dropdown - User Information -->
+                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                         aria-labelledby="actionDropdown@(item.TaskId)" role="menu">
+                        <a class="dropdown-item" asp-action="Create" asp-controller="TaskAssignments"
+                           asp-route-id="@item.TaskId" role="menuitem">
+                            <i class="fas fa-user-plus mr-2 text-gray-400"></i>
+                            Assign
+                        </a>
+                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.TaskId" role="menuitem">
+                            <i class="fas fa-edit mr-2 fa-sm fa-fw text-gray-400"></i>
+                            Edit
+                        </a>
+                        <a class="dropdown-item" asp-action="Details" asp-route-id="@item.TaskId" role="menuitem">
+                            <i class="fas fa-info-circle fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Details
+                        </a>
+                        <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.TaskId" role="menuitem">
+                            <i class="fas fa-trash-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Delete
+                        </a>
+                    </div>
             </td>
         </tr>
 }

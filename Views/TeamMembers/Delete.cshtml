@@ -35,6 +35,6 @@
         <input type="hidden" asp-for="TeamId" />
         <input type="hidden" asp-for="UserId" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <a asp-action="Edit" asp-controller="Teams" asp-route-id="@Model.TeamId">Back task</a>
     </form>
 </div>

@@ -21,8 +21,12 @@ namespace CPMP.Controllers
         // GET: TaskAssignments
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.TaskAssignments.Include(t => t.Task).Include(t => t.User).Where(_=>_.UserId.Equals(int.Parse(HttpContext.Session.GetString("UserId")!)));
-            return View(await applicationDbContext.ToListAsync());
+            var taskAssignments =  _context.TaskAssignments
+                .Include(t => t.Task)
+                .ThenInclude(u => u.CreatedByNavigation)
+                .Where(t=>t.UserId.Equals(int.Parse(HttpContext.Session.GetString("UserId")!))).AsNoTracking();
+            
+            return View(await taskAssignments.ToListAsync());
         }
 
         // GET: TaskAssignments/Details/5
@@ -58,12 +62,13 @@ namespace CPMP.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TaskId,UserId,AssignedAt")] TaskAssignment taskAssignment)
+        public async Task<IActionResult> Create([Bind("TaskId,UserId")] TaskAssignment taskAssignment)
         {
             ModelState.Remove("User");
             ModelState.Remove("Task");
             if (ModelState.IsValid)
             {
+                taskAssignment.AssignedAt = DateTime.Now;
                 _context.Add(taskAssignment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -71,6 +76,16 @@ namespace CPMP.Controllers
             ViewData["TaskId"] = new SelectList(_context.Tasks, "TaskId", "TaskId", taskAssignment.TaskId);
             ViewData["UserId"] = new SelectList(_context.Users, "UserId", "Email", taskAssignment.UserId);
             return View(taskAssignment);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateFromTask([Bind("TaskId,UserId")] TaskAssignment taskAssignment)
+        {
+                taskAssignment.AssignedAt = DateTime.Now;
+                _context.Add(taskAssignment);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Edit","Tasks", new {id=taskAssignment.TaskId});     
         }
 
         // GET: TaskAssignments/Edit/5
